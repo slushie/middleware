@@ -11,14 +11,25 @@ class MiddlewareServiceProvider extends ServiceProvider {
 	 */
 	protected $defer = false;
 
-	/**
+  /**
+   * @inheritdoc
+   */
+  public function boot() {
+    parent::boot();
+
+    $this->app['middleware']->register();
+  }
+
+  /**
 	 * Register the service provider.
 	 *
 	 * @return void
 	 */
 	public function register()
 	{
-		//
+    $this->app->singleton('middleware', function($app) {
+      return new Loader($app);
+    });
 	}
 
 	/**
@@ -28,7 +39,7 @@ class MiddlewareServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array();
+		return array('middleware');
 	}
 
 }
