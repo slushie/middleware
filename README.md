@@ -14,17 +14,29 @@ the `app/config/app.php` file).
 How To Use
 ----------
 
-First, create a class that implements at least one of `BeforeInterface` or
-`AfterInterface`. Then implement the `onBefore($request)` and
-`onAfter($request, $response)` methods. You can return a non-`null` value
-from an `onBefore` handler to halt request processing, just like with
-Laravel's `App::before()`. Return values for `onAfter()` are ignored.
+First, create a class that implements at least one of
+`Slushie\Middleware\BeforeInterface` or `Slushie\Middleware\AfterInterface`.
+Then implement the `onBefore($request)` and `onAfter($request, $response)`
+methods. You can return a non-`null` value from an `onBefore` handler to
+halt request processing, just like with Laravel's `App::before()`. Return
+values for `onAfter()` are ignored.
 
     class RedirectBeforeMiddleware implements BeforeInterface {
       public function onBefore($request) {
         if ($request->query('mobile') == 'redirect') {
           return Redirect::to('/mobile');
         }
+      }
+    }
+
+    class TimingMiddleware implements BeforeInterface, AfterInterface {
+      public function onBefore($request) {
+        $this->start_time = time();
+      }
+
+      public function onAfter($request, $response) {
+        $duration = time() - $this->start_time;
+        Log::info("Processing {$request->url()} took {$duration} sec");
       }
     }
 
@@ -41,7 +53,8 @@ For example, your `app/config/app.php` file might include:
     ),
 
     'middleware' => array(
-      'RedirectBeforeMiddleware'
+      'RedirectBeforeMiddleware',
+      'TimingMiddleware'
     )
 
 How It Works
