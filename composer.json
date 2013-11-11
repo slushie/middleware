@@ -1,5 +1,5 @@
 {
-    "name": "slushie/middleware",
+    "name": "slushie/laravel-middleware",
     "description": "Laravel 4 Middleware Loader",
     "authors": [
         {
